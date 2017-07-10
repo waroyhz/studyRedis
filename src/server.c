@@ -3940,7 +3940,7 @@ int redisIsSupervised(int mode) {
     return 0;
 }
 
-
+//server入口
 int main(int argc, char **argv) {
     struct timeval tv;
     int j;
@@ -4002,6 +4002,9 @@ int main(int argc, char **argv) {
     /* Check if we need to start in redis-check-rdb mode. We just execute
      * the program main. However the program is part of the Redis executable
      * so that we can easily execute an RDB check on loading errors. */
+    /*
+     * 判断是否为redis-check-rdb模式
+     */
     if (strstr(argv[0],"redis-check-rdb") != NULL)
         redis_check_rdb_main(argc,argv);
 
@@ -4070,6 +4073,7 @@ int main(int argc, char **argv) {
         loadServerConfig(configfile,options);
         sdsfree(options);
     } else {
+    	//无参数启动，打印警告信息
         serverLog(LL_WARNING, "Warning: no config file specified, using the default config. In order to specify a config file use %s /path/to/%s.conf", argv[0], server.sentinel_mode ? "sentinel" : "redis");
     }
 

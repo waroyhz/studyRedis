@@ -1,5 +1,7 @@
 This README is just a fast *quick start* document. You can find more detailed documentation at http://redis.io.
 
+这是一个学习工程，基与redis3.2.9，用于分析redis源码，并附上对源码理解的注释。
+
 What is Redis?
 --------------
 
