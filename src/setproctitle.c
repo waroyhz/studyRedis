@@ -150,7 +150,7 @@ void spt_init(int argc, char *argv[]) {
 	char *base, *end, *nul, *tmp;
 	int i, error;
 
-	if (!(base = argv[0]))
+	if (!(base = argv[0])) //取运行路径
 		return;
 
 	nul = &base[strlen(base)];

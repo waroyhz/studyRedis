@@ -93,4 +93,4 @@ LINK_DIRECTORIES(/usr/local/lib deps/lua/src deps/hiredis)
 
 add_executable(redis_server ${SOURCE_FILES} ${cpp_lua} ${cpp_hiredis} ${geohash_int})
 
-target_link_libraries(redis_server lua hiredis)
+target_link_libraries(redis_server lua hiredis m pthread c dl)

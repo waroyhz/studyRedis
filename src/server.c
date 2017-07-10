@@ -1893,6 +1893,7 @@ void initServer(void) {
     server.db = zmalloc(sizeof(redisDb)*server.dbnum);
 
     /* Open the TCP listening socket for the user commands. */
+    //初始化socket，根据地址端口获取socket句柄
     if (server.port != 0 &&
         listenToPort(server.port,server.ipfd,&server.ipfd_count) == C_ERR)
         exit(1);
@@ -1962,6 +1963,7 @@ void initServer(void) {
 
     /* Create an event handler for accepting new connections in TCP and Unix
      * domain sockets. */
+    //初始化异步事件，注册新连接接收
     for (j = 0; j < server.ipfd_count; j++) {
         if (aeCreateFileEvent(server.el, server.ipfd[j], AE_READABLE,
             acceptTcpHandler,NULL) == AE_ERR)
@@ -3940,7 +3942,7 @@ int redisIsSupervised(int mode) {
     return 0;
 }
 
-//server入口
+//TODO server入口
 int main(int argc, char **argv) {
     struct timeval tv;
     int j;

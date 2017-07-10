@@ -70,11 +70,11 @@ client *createClient(int fd) {
      * contexts (for instance a Lua script) we need a non connected client. */
     if (fd != -1) {
         anetNonBlock(NULL,fd);
-        anetEnableTcpNoDelay(NULL,fd);
+        anetEnableTcpNoDelay(NULL,fd); //NoDelay,防止读读写出现阻塞
         if (server.tcpkeepalive)
-            anetKeepAlive(NULL,fd,server.tcpkeepalive);
+            anetKeepAlive(NULL,fd,server.tcpkeepalive);//处理心跳
         if (aeCreateFileEvent(server.el,fd,AE_READABLE,
-            readQueryFromClient, c) == AE_ERR)
+            readQueryFromClient, c) == AE_ERR) //注册读写信号
         {
             close(fd);
             zfree(c);
@@ -125,7 +125,7 @@ client *createClient(int fd) {
     c->peerid = NULL;
     listSetFreeMethod(c->pubsub_patterns,decrRefCountVoid);
     listSetMatchMethod(c->pubsub_patterns,listMatchObjects);
-    if (fd != -1) listAddNodeTail(server.clients,c);
+    if (fd != -1) listAddNodeTail(server.clients,c); //把客户端加入到链表里
     initClientMultiState(c);
     return c;
 }
@@ -683,6 +683,7 @@ static void acceptCommonHandler(int fd, int flags, char *ip) {
     c->flags |= flags;
 }
 
+//todo 接受tcp连接
 void acceptTcpHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
     int cport, cfd, max = MAX_ACCEPTS_PER_CALL;
     char cip[NET_IP_STR_LEN];
@@ -690,9 +691,9 @@ void acceptTcpHandler(aeEventLoop *el, int fd, void *privdata, int mask) {
     UNUSED(mask);
     UNUSED(privdata);
 
-    while(max--) {
+    while(max--) {//重试次数，如果重试超过MAX_ACCEPTS_PER_CALL次数，则退出
         cfd = anetTcpAccept(server.neterr, fd, cip, sizeof(cip), &cport);
-        if (cfd == ANET_ERR) {
+        if (cfd == ANET_ERR) {//如果已经建立连接，第二次则不处理。
             if (errno != EWOULDBLOCK)
                 serverLog(LL_WARNING,
                     "Accepting client connection: %s", server.neterr);
