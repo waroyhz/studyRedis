@@ -399,7 +399,7 @@ void randomkeyCommand(client *c) {
     addReplyBulk(c,key);
     decrRefCount(key);
 }
-
+//命令处理
 void keysCommand(client *c) {
     dictIterator *di;
     dictEntry *de;

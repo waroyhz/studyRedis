@@ -141,6 +141,7 @@ int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
     }
     aeFileEvent *fe = &eventLoop->events[fd];
 
+    //调用epoll
     if (aeApiAddEvent(eventLoop, fd, mask) == -1)
         return AE_ERR;
     fe->mask |= mask;

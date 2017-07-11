@@ -498,9 +498,10 @@ dictEntry *dictFind(dict *d, const void *key)
     if (dictIsRehashing(d)) _dictRehashStep(d);
     h = dictHashKey(d, key);
     for (table = 0; table <= 1; table++) {
-        idx = h & d->ht[table].sizemask;
-        he = d->ht[table].table[idx];
+        idx = h & d->ht[table].sizemask; //得到表索引
+        he = d->ht[table].table[idx]; //得到表索引首个链表值
         while(he) {
+            //比较key是否相等
             if (key==he->key || dictCompareKeys(d, key, he->key))
                 return he;
             he = he->next;

@@ -1119,7 +1119,7 @@ static void setProtocolError(client *c, int pos) {
     c->flags |= CLIENT_CLOSE_AFTER_REPLY;
     sdsrange(c->querybuf,pos,-1);
 }
-
+//将命令拆分到argc内
 int processMultibulkBuffer(client *c) {
     char *newline = NULL;
     int pos = 0, ok;
@@ -1278,7 +1278,7 @@ void processInputBuffer(client *c) {
         /* Determine request type when unknown. */
         if (!c->reqtype) {
             if (c->querybuf[0] == '*') {
-                c->reqtype = PROTO_REQ_MULTIBULK;
+                c->reqtype = PROTO_REQ_MULTIBULK; //首字节为*代表多行命令
             } else {
                 c->reqtype = PROTO_REQ_INLINE;
             }
@@ -1287,7 +1287,7 @@ void processInputBuffer(client *c) {
         if (c->reqtype == PROTO_REQ_INLINE) {
             if (processInlineBuffer(c) != C_OK) break;
         } else if (c->reqtype == PROTO_REQ_MULTIBULK) {
-            if (processMultibulkBuffer(c) != C_OK) break;
+            if (processMultibulkBuffer(c) != C_OK) break; //处理多行命令
         } else {
             serverPanic("Unknown request type");
         }
@@ -1307,6 +1307,7 @@ void processInputBuffer(client *c) {
     server.current_client = NULL;
 }
 
+//客户端接收数据入口
 void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
     client *c = (client*) privdata;
     int nread, readlen;
