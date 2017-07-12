@@ -89,7 +89,7 @@ void setGenericCommand(client *c, int flags, robj *key, robj *val, robj *expire,
     notifyKeyspaceEvent(NOTIFY_STRING,"set",key,c->db->id);
     if (expire) notifyKeyspaceEvent(NOTIFY_GENERIC,
         "expire",key,c->db->id);
-    addReply(c, ok_reply ? ok_reply : shared.ok);
+    addReply(c, ok_reply ? ok_reply : shared.ok);//加入应答
 }
 
 /* SET key value [NX] [XX] [EX <seconds>] [PX <milliseconds>] */

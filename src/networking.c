@@ -183,7 +183,7 @@ int prepareClientToWrite(client *c) {
          * a system call. We'll only really install the write handler if
          * we'll not be able to write the whole reply at once. */
         c->flags |= CLIENT_PENDING_WRITE;
-        listAddNodeHead(server.clients_pending_write,c);
+        listAddNodeHead(server.clients_pending_write,c);//将客户端放入写队列，在循环结束后检查写队列进行写入
     }
 
     /* Authorize the caller to queue in the output buffer of this client. */
@@ -1011,7 +1011,7 @@ int handleClientsWithPendingWrites(void) {
         if (writeToClient(c->fd,c,0) == C_ERR) continue;
 
         /* If there is nothing left, do nothing. Otherwise install
-         * the write handler. */
+         * the write handler. 如果写入socket失败，则创建一个写任务，再次处理*/
         if (clientHasPendingReplies(c) &&
             aeCreateFileEvent(server.el, c->fd, AE_WRITABLE,
                 sendReplyToClient, c) == AE_ERR)

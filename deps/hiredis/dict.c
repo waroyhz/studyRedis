@@ -137,16 +137,16 @@ static int dictAdd(dict *ht, void *key, void *val) {
     dictEntry *entry;
 
     /* Get the index of the new element, or -1 if
-     * the element already exists. */
+     * the element already exists. 根据key获取索引，如果已经存在就返回-1*/
     if ((index = _dictKeyIndex(ht, key)) == -1)
         return DICT_ERR;
 
     /* Allocates the memory and stores key */
     entry = malloc(sizeof(*entry));
-    entry->next = ht->table[index];
+    entry->next = ht->table[index];//将节点插入到链表头部
     ht->table[index] = entry;
 
-    /* Set the hash entry fields. */
+    /* Set the hash entry fields. 设置字段的值*/
     dictSetHashKey(ht, entry, key);
     dictSetHashVal(ht, entry, val);
     ht->used++;

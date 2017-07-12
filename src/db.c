@@ -183,9 +183,9 @@ void dbOverwrite(redisDb *db, robj *key, robj *val) {
  * 3) The expire time of the key is reset (the key is made persistent). */
 void setKey(redisDb *db, robj *key, robj *val) {
     if (lookupKeyWrite(db,key) == NULL) {
-        dbAdd(db,key,val);
+        dbAdd(db,key,val);//增加key
     } else {
-        dbOverwrite(db,key,val);
+        dbOverwrite(db,key,val);//改写key
     }
     incrRefCount(val);
     removeExpire(db,key);
@@ -399,7 +399,7 @@ void randomkeyCommand(client *c) {
     addReplyBulk(c,key);
     decrRefCount(key);
 }
-//命令处理
+//keys命令处理
 void keysCommand(client *c) {
     dictIterator *di;
     dictEntry *de;
@@ -410,7 +410,7 @@ void keysCommand(client *c) {
 
     di = dictGetSafeIterator(c->db->dict);
     allkeys = (pattern[0] == '*' && pattern[1] == '\0');
-    while((de = dictNext(di)) != NULL) {
+    while((de = dictNext(di)) != NULL) { //遍历链表里的key数量
         sds key = dictGetKey(de);
         robj *keyobj;
 

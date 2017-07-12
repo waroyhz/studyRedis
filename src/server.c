@@ -1352,7 +1352,7 @@ void beforeSleep(struct aeEventLoop *eventLoop) {
     /* Write the AOF buffer on disk */
     flushAppendOnlyFile(0);
 
-    /* Handle writes with pending output buffers. */
+    /* Handle writes with pending output buffers. 处理写队列*/
     handleClientsWithPendingWrites();
 }
 
@@ -2252,7 +2252,7 @@ void call(client *c, int flags) {
     /* Call the command. */
     dirty = server.dirty;
     start = ustime();
-    c->cmd->proc(c);
+    c->cmd->proc(c); //处理命令函数
     duration = ustime()-start;
     dirty = server.dirty-dirty;
     if (dirty < 0) dirty = 0;
