@@ -173,22 +173,22 @@ typedef long long mstime_t; /* millisecond time type. */
 
 /* Command flags. Please check the command table defined in the redis.c file
  * for more information about the meaning of every flag. */
-#define CMD_WRITE 1                   /* "w" flag */
-#define CMD_READONLY 2                /* "r" flag */
-#define CMD_DENYOOM 4                 /* "m" flag */
-#define CMD_NOT_USED_1 8              /* no longer used flag */
-#define CMD_ADMIN 16                  /* "a" flag */
-#define CMD_PUBSUB 32                 /* "p" flag */
-#define CMD_NOSCRIPT  64              /* "s" flag */
-#define CMD_RANDOM 128                /* "R" flag */
-#define CMD_SORT_FOR_SCRIPT 256       /* "S" flag */
-#define CMD_LOADING 512               /* "l" flag */
-#define CMD_STALE 1024                /* "t" flag */
-#define CMD_SKIP_MONITOR 2048         /* "M" flag */
-#define CMD_ASKING 4096               /* "k" flag */
-#define CMD_FAST 8192                 /* "F" flag */
+#define CMD_WRITE 1                   /* "w" flag ,1 << 0*/
+#define CMD_READONLY 2                /* "r" flag ,1 << 1*/
+#define CMD_DENYOOM 4                 /* "m" flag ,1 << 2*/
+#define CMD_NOT_USED_1 8              /* no longer used flag ,1 << 3*/
+#define CMD_ADMIN 16                  /* "a" flag ,1 << 4*/
+#define CMD_PUBSUB 32                 /* "p" flag ,1 << 5*/
+#define CMD_NOSCRIPT  64              /* "s" flag ,1 << 6*/
+#define CMD_RANDOM 128                /* "R" flag ,1 << 7*/
+#define CMD_SORT_FOR_SCRIPT 256       /* "S" flag ,1 << 8*/
+#define CMD_LOADING 512               /* "l" flag ,1 << 9*/
+#define CMD_STALE 1024                /* "t" flag ,1 << 10*/
+#define CMD_SKIP_MONITOR 2048         /* "M" flag ,1 << 11*/
+#define CMD_ASKING 4096               /* "k" flag ,1 << 12*/
+#define CMD_FAST 8192                 /* "F" flag ,1 << 13*/
 
-/* Object types */
+/* Object types 对象类型*/
 #define OBJ_STRING 0
 #define OBJ_LIST 1
 #define OBJ_SET 2

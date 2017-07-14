@@ -11,9 +11,9 @@ include_directories(
 )
 
 set(SOURCE_FILES
-        src/server.c
+        src/server.c #主函数，初始化
         src/redis-check-rdb.c
-        src/geo.c
+        src/geo.c #包含测距，经纬度数组
         deps/geohash-int/geohash.c
         deps/geohash-int/geohash_helper.c
 

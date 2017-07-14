@@ -196,17 +196,17 @@ void listTypeConvert(robj *subject, int enc) {
 
 void pushGenericCommand(client *c, int where) {
     int j, waiting = 0, pushed = 0;
-    robj *lobj = lookupKeyWrite(c->db,c->argv[1]);
+    robj *lobj = lookupKeyWrite(c->db,c->argv[1]); //寻找key
 
-    if (lobj && lobj->type != OBJ_LIST) {
+    if (lobj && lobj->type != OBJ_LIST) { //如果key已经存在
         addReply(c,shared.wrongtypeerr);
         return;
     }
 
     for (j = 2; j < c->argc; j++) {
         c->argv[j] = tryObjectEncoding(c->argv[j]);
-        if (!lobj) {
-            lobj = createQuicklistObject();
+        if (!lobj) {//如果key不存在
+            lobj = createQuicklistObject();//创建一个list
             quicklistSetOptions(lobj->ptr, server.list_max_ziplist_size,
                                 server.list_compress_depth);
             dbAdd(c->db,c->argv[1],lobj);
@@ -215,11 +215,11 @@ void pushGenericCommand(client *c, int where) {
         pushed++;
     }
     addReplyLongLong(c, waiting + (lobj ? listTypeLength(lobj) : 0));
-    if (pushed) {
+    if (pushed) {//添加成功
         char *event = (where == LIST_HEAD) ? "lpush" : "rpush";
 
         signalModifiedKey(c->db,c->argv[1]);
-        notifyKeyspaceEvent(NOTIFY_LIST,event,c->argv[1],c->db->id);
+        notifyKeyspaceEvent(NOTIFY_LIST,event,c->argv[1],c->db->id);//添加push事件，用于出发pop
     }
     server.dirty += pushed;
 }
@@ -367,8 +367,8 @@ void popGenericCommand(client *c, int where) {
 
         addReplyBulk(c,value);
         decrRefCount(value);
-        notifyKeyspaceEvent(NOTIFY_LIST,event,c->argv[1],c->db->id);
-        if (listTypeLength(o) == 0) {
+        notifyKeyspaceEvent(NOTIFY_LIST,event,c->argv[1],c->db->id);//事件通知
+        if (listTypeLength(o) == 0) {//如果订阅为空？
             notifyKeyspaceEvent(NOTIFY_GENERIC,"del",
                                 c->argv[1],c->db->id);
             dbDelete(c->db,c->argv[1]);
