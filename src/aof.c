@@ -220,7 +220,7 @@ void stopAppendOnly(void) {
 
         serverLog(LL_NOTICE,"Killing running AOF rewrite child: %ld",
             (long) server.aof_child_pid);
-        if (kill(server.aof_child_pid,SIGUSR1) != -1) {
+        if (kill(server.aof_child_pid,SIGUSR1) != -1) { //处理子进程僵尸状态
             while(wait3(&statloc,0,NULL) != server.aof_child_pid);
         }
         /* reset the buffer accumulating changes while the child saves */
@@ -1266,16 +1266,16 @@ int rewriteAppendOnlyFileBackground(void) {
     long long start;
 
     if (server.aof_child_pid != -1 || server.rdb_child_pid != -1) return C_ERR;
-    if (aofCreatePipes() != C_OK) return C_ERR;
+    if (aofCreatePipes() != C_OK) return C_ERR; //创建进程通讯管稿
     start = ustime();
-    if ((childpid = fork()) == 0) {
+    if ((childpid = fork()) == 0) {//打开一个子进程
         char tmpfile[256];
 
-        /* Child */
-        closeListeningSockets(0);
+        /* Child 子进程执行*/
+        closeListeningSockets(0);//释放socket句柄
         redisSetProcTitle("redis-aof-rewrite");
         snprintf(tmpfile,256,"temp-rewriteaof-bg-%d.aof", (int) getpid());
-        if (rewriteAppendOnlyFile(tmpfile) == C_OK) {
+        if (rewriteAppendOnlyFile(tmpfile) == C_OK) { //写入文件
             size_t private_dirty = zmalloc_get_private_dirty();
 
             if (private_dirty) {
@@ -1288,8 +1288,8 @@ int rewriteAppendOnlyFileBackground(void) {
             exitFromChild(1);
         }
     } else {
-        /* Parent */
-        server.stat_fork_time = ustime()-start;
+        /* Parent 父进程执行*/
+        server.stat_fork_time = ustime()-start;//计算fork内存拷贝时间
         server.stat_fork_rate = (double) zmalloc_used_memory() * 1000000 / server.stat_fork_time / (1024*1024*1024); /* GB per second. */
         latencyAddSampleIfNeeded("fork",server.stat_fork_time/1000);
         if (childpid == -1) {
