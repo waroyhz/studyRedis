@@ -133,7 +133,7 @@ void bioCreateBackgroundJob(int type, void *arg1, void *arg2, void *arg3) {
     pthread_mutex_lock(&bio_mutex[type]);
     listAddNodeTail(bio_jobs[type],job);
     bio_pending[type]++;
-    pthread_cond_signal(&bio_condvar[type]);
+    pthread_cond_signal(&bio_condvar[type]);//发送信号唤醒线程
     pthread_mutex_unlock(&bio_mutex[type]);
 }
 
@@ -168,7 +168,7 @@ void *bioProcessBackgroundJobs(void *arg) {
 
         /* The loop always starts with the lock hold. */
         if (listLength(bio_jobs[type]) == 0) {
-            pthread_cond_wait(&bio_condvar[type],&bio_mutex[type]);
+            pthread_cond_wait(&bio_condvar[type],&bio_mutex[type]); //没有任务的时候等待
             continue;
         }
         /* Pop the job from the queue. */

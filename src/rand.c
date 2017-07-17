@@ -10,7 +10,7 @@
  * The original code appears to be under the public domain.
  * I modified it removing the non needed functions and all the
  * 1960-style C coding stuff...
- *
+ * 随机数生成
  * ----------------------------------------------------------------------------
  *
  * Copyright (c) 2010-2012, Salvatore Sanfilippo <antirez at gmail dot com>

@@ -122,19 +122,19 @@ static void zmalloc_default_oom(size_t size) {
 static void (*zmalloc_oom_handler)(size_t) = zmalloc_default_oom;
 
 void *zmalloc(size_t size) {
-    void *ptr = malloc(size+PREFIX_SIZE);
+    void *ptr = malloc(size+PREFIX_SIZE); //申请内存加上一个size_t前缀
 
     if (!ptr) zmalloc_oom_handler(size);
 #ifdef HAVE_MALLOC_SIZE
     update_zmalloc_stat_alloc(zmalloc_size(ptr));
     return ptr;
 #else
-    *((size_t*)ptr) = size;
-    update_zmalloc_stat_alloc(size+PREFIX_SIZE);
+    *((size_t*)ptr) = size;//将加上的size_t前缀填充分配的大小
+    update_zmalloc_stat_alloc(size+PREFIX_SIZE); //更新已经分配内存大小
     return (char*)ptr+PREFIX_SIZE;
 #endif
 }
-
+//复习calloc与malloc区别，calloc分配nmemb个长度为size的空间，并初始化为0.
 void *zcalloc(size_t size) {
     void *ptr = calloc(1, size+PREFIX_SIZE);
 
@@ -148,7 +148,7 @@ void *zcalloc(size_t size) {
     return (char*)ptr+PREFIX_SIZE;
 #endif
 }
-
+//重新分配内存
 void *zrealloc(void *ptr, size_t size) {
 #ifndef HAVE_MALLOC_SIZE
     void *realptr;
@@ -191,7 +191,7 @@ size_t zmalloc_size(void *ptr) {
     return size+PREFIX_SIZE;
 }
 #endif
-
+//释放内存
 void zfree(void *ptr) {
 #ifndef HAVE_MALLOC_SIZE
     void *realptr;
@@ -217,7 +217,7 @@ char *zstrdup(const char *s) {
     memcpy(p,s,l);
     return p;
 }
-
+//已经使用的内存大小
 size_t zmalloc_used_memory(void) {
     size_t um;
 

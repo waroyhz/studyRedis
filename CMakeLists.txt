@@ -18,13 +18,13 @@ set(SOURCE_FILES
         deps/geohash-int/geohash_helper.c
 
         src/config.c
-        src/object.c
+        src/object.c #redis对象
         src/debug.c
-        src/syncio.c
-        src/rand.c
+        src/syncio.c #同步io
+        src/rand.c#随机数生成
 
         src/util.c
-        src/aof.c
+        src/aof.c#aof文件操作，包含fork后台备份
         src/rdb.c
 
         src/sha1.c
@@ -61,15 +61,15 @@ set(SOURCE_FILES
         src/setproctitle.c
         src/zipmap.c
         src/ziplist.c
-        src/zmalloc.c
+        src/zmalloc.c #内存申请释放封装
         src/slowlog.c
         src/hyperloglog.c
         src/bitops.c
         src/sentinel.c
 
-        src/bio.c
-        src/anet.c
-        src/ae.c
+        src/bio.c #后台文件io
+        src/anet.c #socket操作封装
+        src/ae.c #ae事件驱动库
 
         src/scripting.c
         src/rio.c
@@ -79,18 +79,14 @@ set(SOURCE_FILES
         src/crc64.c
         )
 
-#aux_source_directory(deps/lua/src cpp_lua)
-#aux_source_directory(deps/hiredis cpp_hiredis)
-#aux_source_directory(deps/geohash-int geohash_int)
-
 LINK_DIRECTORIES(/usr/local/lib deps/lua/src deps/hiredis)
-
-#execute_process(
-#        COMMAND "cd deps/lua/src && make"
-#        COMMAND "cd deps/hiredis && make"
-#        COMMAND "cd deps/geohash-int && make"
-#    )
 
 add_executable(redis_server ${SOURCE_FILES} ${cpp_lua} ${cpp_hiredis} ${geohash_int})
 
 target_link_libraries(redis_server lua hiredis m pthread c dl)
+
+
+project(redis_test)
+set(CMAKE_CXX_STANDARD c++11)
+
+add_executable(redis_test test.c src/pqsort.c)
