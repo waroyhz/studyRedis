@@ -292,11 +292,11 @@ void freeHashObject(robj *o) {
     }
 }
 
-void incrRefCount(robj *o) {
+void incrRefCount(robj *o) {//增加一个对象引用
     o->refcount++;
 }
 
-void decrRefCount(robj *o) {
+void decrRefCount(robj *o) {//减少一个对象引用
     if (o->refcount <= 0) serverPanic("decrRefCount against refcount <= 0");
     if (o->refcount == 1) {
         switch(o->type) {

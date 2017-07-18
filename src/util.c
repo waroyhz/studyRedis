@@ -43,7 +43,7 @@
 #include "util.h"
 #include "sha1.h"
 
-/* Glob-style pattern matching. */
+/* Glob-style pattern matching. 正则表达式实现*/
 int stringmatchlen(const char *pattern, int patternLen,
         const char *string, int stringLen, int nocase)
 {
@@ -290,24 +290,24 @@ int ll2string(char* dst, size_t dstlen, long long svalue) {
         if (svalue != LLONG_MIN) {
             value = -svalue;
         } else {
-            value = ((unsigned long long) LLONG_MAX)+1;
+            value = ((unsigned long long) LLONG_MAX)+1;//直接赋值，比上面的位运算快
         }
-        negative = 1;
+        negative = 1;//负数
     } else {
         value = svalue;
         negative = 0;
     }
 
     /* Check length. */
-    uint32_t const length = digits10(value)+negative;
-    if (length >= dstlen) return 0;
+    uint32_t const length = digits10(value)+negative;//计算长度
+    if (length >= dstlen) return 0;//长度不够
 
     /* Null term. */
     uint32_t next = length;
     dst[next] = '\0';
     next--;
     while (value >= 100) {
-        int const i = (value % 100) * 2;
+        int const i = (value % 100) * 2;//取出201预定义位置索引
         value /= 100;
         dst[next] = digits[i + 1];
         dst[next - 1] = digits[i];
@@ -323,7 +323,7 @@ int ll2string(char* dst, size_t dstlen, long long svalue) {
         dst[next - 1] = digits[i];
     }
 
-    /* Add sign. */
+    /* Add sign. 加入符号*/
     if (negative) dst[0] = '-';
     return length;
 }
@@ -340,7 +340,7 @@ int string2ll(const char *s, size_t slen, long long *value) {
     if (plen == slen)
         return 0;
 
-    /* Special case: first and only digit is 0. */
+    /* Special case: first and only digit is 0. 先判断是否为0*/
     if (slen == 1 && p[0] == '0') {
         if (value != NULL) *value = 0;
         return 1;
@@ -360,7 +360,7 @@ int string2ll(const char *s, size_t slen, long long *value) {
         v = p[0]-'0';
         p++; plen++;
     } else if (p[0] == '0' && slen == 1) {
-        *value = 0;
+        *value = 0; //这个判断重复了，不可能会运行到
         return 1;
     } else {
         return 0;

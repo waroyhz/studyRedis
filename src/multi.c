@@ -129,6 +129,7 @@ void execCommand(client *c) {
      * A failed EXEC in the first case returns a multi bulk nil object
      * (technically it is not an error but a special behavior), while
      * in the second an EXECABORT error is returned. */
+    //当客户端被标识为CLIENT_DIRTY_CAS时标识锁监视的数据已经被修改，因此返回执行失败。
     if (c->flags & (CLIENT_DIRTY_CAS|CLIENT_DIRTY_EXEC)) {
         addReply(c, c->flags & CLIENT_DIRTY_EXEC ? shared.execaborterr :
                                                   shared.nullmultibulk);
@@ -177,6 +178,7 @@ handle_monitor:
      * MUTLI, EXEC, ... commands inside transaction ...
      * Instead EXEC is flagged as CMD_SKIP_MONITOR in the command
      * table, and we do it here with correct ordering. */
+    //如果开启了服务器监控，将客户端命令立即发送到监控的客户端上
     if (listLength(server.monitors) && !server.loading)
         replicationFeedMonitors(c,server.monitors,c->db->id,c->argv,c->argc);
 }
@@ -198,38 +200,38 @@ typedef struct watchedKey {
     redisDb *db;
 } watchedKey;
 
-/* Watch for the specified key */
+/* Watch for the specified key ,监视key*/
 void watchForKey(client *c, robj *key) {
     list *clients = NULL;
     listIter li;
     listNode *ln;
     watchedKey *wk;
 
-    /* Check if we are already watching for this key */
+    /* Check if we are already watching for this key ,检查是否已经执行过监视命令*/
     listRewind(c->watched_keys,&li);
     while((ln = listNext(&li))) {
         wk = listNodeValue(ln);
         if (wk->db == c->db && equalStringObjects(key,wk->key))
             return; /* Key already watched */
     }
-    /* This key is not already watched in this DB. Let's add it */
+    /* This key is not already watched in this DB. Let's add it ，没有被监视，增加一个监视*/
     clients = dictFetchValue(c->db->watched_keys,key);
     if (!clients) {
         clients = listCreate();
         dictAdd(c->db->watched_keys,key,clients);
         incrRefCount(key);
     }
-    listAddNodeTail(clients,c);
+    listAddNodeTail(clients,c); //将自己加入到key的监视列表里
     /* Add the new key to the list of keys watched by this client */
     wk = zmalloc(sizeof(*wk));
     wk->key = key;
     wk->db = c->db;
     incrRefCount(key);
-    listAddNodeTail(c->watched_keys,wk);
+    listAddNodeTail(c->watched_keys,wk);//将key加入到自己的监视列表里
 }
 
 /* Unwatch all the keys watched by this client. To clean the EXEC dirty
- * flag is up to the caller. */
+ * flag is up to the caller. 移除客户端监听的所有key*/
 void unwatchAllKeys(client *c) {
     listIter li;
     listNode *ln;
@@ -272,7 +274,7 @@ void touchWatchedKey(redisDb *db, robj *key) {
     listRewind(clients,&li);
     while((ln = listNext(&li))) {
         client *c = listNodeValue(ln);
-
+        //给监控的客户端加上无效的标记，该客户端下一个执行将被置为无效
         c->flags |= CLIENT_DIRTY_CAS;
     }
 }

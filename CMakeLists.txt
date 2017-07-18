@@ -23,20 +23,20 @@ set(SOURCE_FILES
         src/syncio.c #同步io
         src/rand.c#随机数生成
 
-        src/util.c
+        src/util.c#工具类，正则表达式、内存显示、longlong与文字的胡转
         src/aof.c#aof文件操作，包含fork后台备份
         src/rdb.c
 
         src/sha1.c
         src/cluster.c
-        src/replication.c
+        src/replication.c#同步复制
         src/db.c
-        src/multi.c
+        src/multi.c#多命令,使用监控方法实现事物
 
-        src/networking.c
-        src/blocked.c
+        src/networking.c#网络工具类
+        src/blocked.c#客户端阻塞类
 
-        src/pubsub.c
+        src/pubsub.c#发布和订阅
         src/t_zset.c
         src/t_list.c
         src/t_hash.c
@@ -48,8 +48,8 @@ set(SOURCE_FILES
         src/intset.c
         src/endianconv.c
 
-        src/sort.c
-        src/pqsort.c
+        src/sort.c#对储存的数据进行排序
+        src/pqsort.c#快速排序实现方法
 
         src/notify.c
         src/memtest.c

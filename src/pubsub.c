@@ -228,7 +228,7 @@ int pubsubPublishMessage(robj *channel, robj *message) {
     listNode *ln;
     listIter li;
 
-    /* Send to clients listening for that channel */
+    /* Send to clients listening for that channel ，根据通道找出通道节点*/
     de = dictFind(server.pubsub_channels,channel);
     if (de) {
         list *list = dictGetVal(de);
@@ -237,16 +237,16 @@ int pubsubPublishMessage(robj *channel, robj *message) {
 
         listRewind(list,&li);
         while ((ln = listNext(&li)) != NULL) {
-            client *c = ln->value;
+            client *c = ln->value;//遍历节点内的客户端
 
             addReply(c,shared.mbulkhdr[3]);
             addReply(c,shared.messagebulk);
-            addReplyBulk(c,channel);
-            addReplyBulk(c,message);
+            addReplyBulk(c,channel);//加入消息头
+            addReplyBulk(c,message);//加入消息
             receivers++;
         }
     }
-    /* Send to clients listening to matching channels */
+    /* Send to clients listening to matching channels 发送到匹配的通道客户端*/
     if (listLength(server.pubsub_patterns)) {
         listRewind(server.pubsub_patterns,&li);
         channel = getDecodedObject(channel);

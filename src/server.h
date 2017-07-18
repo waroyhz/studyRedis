@@ -247,7 +247,7 @@ typedef long long mstime_t; /* millisecond time type. */
 #define CLIENT_MONITOR (1<<2) /* This client is a slave monitor, see MONITOR */
 #define CLIENT_MULTI (1<<3)   /* This client is in a MULTI context */
 #define CLIENT_BLOCKED (1<<4) /* The client is waiting in a blocking operation */
-#define CLIENT_DIRTY_CAS (1<<5) /* Watched keys modified. EXEC will fail. */
+#define CLIENT_DIRTY_CAS (1<<5) /* Watched keys modified. EXEC will fail. CAS check and set*/
 #define CLIENT_CLOSE_AFTER_REPLY (1<<6) /* Close after writing entire reply. */
 #define CLIENT_UNBLOCKED (1<<7) /* This client was unblocked and is stored in
                                   server.unblocked_clients */

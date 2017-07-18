@@ -198,7 +198,7 @@ void sortCommand(client *c) {
     robj *sortval, *sortby = NULL, *storekey = NULL;
     redisSortObject *vector; /* Resulting vector to sort */
 
-    /* Lookup the key to sort. It must be of the right types */
+    /* Lookup the key to sort. It must be of the right types 检查排序的类型是否正确*/
     sortval = lookupKeyRead(c->db,c->argv[1]);
     if (sortval && sortval->type != OBJ_SET &&
                    sortval->type != OBJ_LIST &&
