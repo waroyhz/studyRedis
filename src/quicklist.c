@@ -479,7 +479,8 @@ REDIS_STATIC int _quicklistNodeAllowMerge(const quicklistNode *a,
  * Returns 1 if new head created. */
 int quicklistPushHead(quicklist *quicklist, void *value, size_t sz) {
     quicklistNode *orig_head = quicklist->head;
-    if (likely(
+    // likely()属于编译器级别的优化,将优先载入if条件里的指令用于优化cpu的执行
+    if (likely(//检查头部空间是否可以插入
             _quicklistNodeAllowInsert(quicklist->head, quicklist->fill, sz))) {
         quicklist->head->zl =
             ziplistPush(quicklist->head->zl, value, sz, ZIPLIST_HEAD);
@@ -549,11 +550,11 @@ quicklist *quicklistAppendValuesFromZiplist(quicklist *quicklist,
     unsigned char *p = ziplistIndex(zl, 0);
     while (ziplistGet(p, &value, &sz, &longval)) {
         if (!value) {
-            /* Write the longval as a string so we can re-add it */
-            sz = ll2string(longstr, sizeof(longstr), longval);
+            /* Write the longval as a string so we can re-add it ，如果字符串为空，则是数值*/
+            sz = ll2string(longstr, sizeof(longstr), longval);//根据数值得到字符串
             value = (unsigned char *)longstr;
         }
-        quicklistPushTail(quicklist, value, sz);
+        quicklistPushTail(quicklist, value, sz);//quicklist标准储存不压缩
         p = ziplistNext(zl, p);
     }
     zfree(zl);
@@ -1245,7 +1246,7 @@ int quicklistIndex(const quicklist *quicklist, const long long idx,
 
     while (likely(n)) {
         if ((accum + n->count) > index) {
-            break;
+            break;//找到index所在的节点
         } else {
             D("Skipping over (%p) %u at accum %lld", (void *)n, n->count,
               accum);
@@ -1271,8 +1272,8 @@ int quicklistIndex(const quicklist *quicklist, const long long idx,
     }
 
     quicklistDecompressNodeForUse(entry->node);
-    entry->zi = ziplistIndex(entry->node->zl, entry->offset);
-    ziplistGet(entry->zi, &entry->value, &entry->sz, &entry->longval);
+    entry->zi = ziplistIndex(entry->node->zl, entry->offset);//取出节点中的偏移值数据点
+    ziplistGet(entry->zi, &entry->value, &entry->sz, &entry->longval);//获取数据点中的数据
     /* The caller will use our result, so we don't re-compress here.
      * The caller can recompress or delete the node as needed. */
     return 1;

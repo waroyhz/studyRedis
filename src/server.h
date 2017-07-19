@@ -637,12 +637,12 @@ struct sharedObjectsStruct {
 
 /* ZSETs use a specialized version of Skiplists */
 typedef struct zskiplistNode {
-    robj *obj;
-    double score;
-    struct zskiplistNode *backward;
+    robj *obj;//储存的对象
+    double score;//储存对象的分值
+    struct zskiplistNode *backward;//后一个
     struct zskiplistLevel {
-        struct zskiplistNode *forward;
-        unsigned int span;
+        struct zskiplistNode *forward;//前一个
+        unsigned int span;//跨越数量
     } level[];
 } zskiplistNode;
 

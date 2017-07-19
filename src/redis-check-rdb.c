@@ -186,13 +186,13 @@ int redis_check_rdb(char *rdbfilename) {
     rioInitWithFile(&rdb,fp);
     rdbstate.rio = &rdb;
     rdb.update_cksum = rdbLoadProgressCallback;
-    if (rioRead(&rdb,buf,9) == 0) goto eoferr;
+    if (rioRead(&rdb,buf,9) == 0) goto eoferr;//先读出9个字节
     buf[9] = '\0';
-    if (memcmp(buf,"REDIS",5) != 0) {
+    if (memcmp(buf,"REDIS",5) != 0) {//如果前5字节不是REDIS则检查失败
         rdbCheckError("Wrong signature trying to load DB from file");
         return 1;
     }
-    rdbver = atoi(buf+5);
+    rdbver = atoi(buf+5);//第6个字节开始为版本号字符
     if (rdbver < 1 || rdbver > RDB_VERSION) {
         rdbCheckError("Can't handle RDB format version %d",rdbver);
         return 1;
@@ -204,8 +204,8 @@ int redis_check_rdb(char *rdbfilename) {
         expiretime = -1;
 
         /* Read type. */
-        rdbstate.doing = RDB_CHECK_DOING_READ_TYPE;
-        if ((type = rdbLoadType(&rdb)) == -1) goto eoferr;
+        rdbstate.doing = RDB_CHECK_DOING_READ_TYPE;//当前操作标志
+        if ((type = rdbLoadType(&rdb)) == -1) goto eoferr;//读取头类型
 
         /* Handle special types. */
         if (type == RDB_OPCODE_EXPIRETIME) {

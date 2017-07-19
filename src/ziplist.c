@@ -324,7 +324,7 @@ unsigned int zipRawEntryLength(unsigned char *p) {
 }
 
 /* Check if string pointed to by 'entry' can be encoded as an integer.
- * Stores the integer value in 'v' and its encoding in 'encoding'. */
+ * Stores the integer value in 'v' and its encoding in 'encoding'. 尝试将string压缩成integer*/
 int zipTryEncoding(unsigned char *entry, unsigned int entrylen, long long *v, unsigned char *encoding) {
     long long value;
 
@@ -333,7 +333,7 @@ int zipTryEncoding(unsigned char *entry, unsigned int entrylen, long long *v, un
         /* Great, the string can be encoded. Check what's the smallest
          * of our encoding types that can hold this value. */
         if (value >= 0 && value <= 12) {
-            *encoding = ZIP_INT_IMM_MIN+value;
+            *encoding = ZIP_INT_IMM_MIN+value;//小于等于12,直接储存在encoding中
         } else if (value >= INT8_MIN && value <= INT8_MAX) {
             *encoding = ZIP_INT_8B;
         } else if (value >= INT16_MIN && value <= INT16_MAX) {
@@ -363,7 +363,7 @@ void zipSaveInteger(unsigned char *p, int64_t value, unsigned char encoding) {
         memcpy(p,&i16,sizeof(i16));
         memrev16ifbe(p);
     } else if (encoding == ZIP_INT_24B) {
-        i32 = value<<8;
+        i32 = value<<8; //24b,左移8位，直接拷贝后3字节，可以拷贝出符号
         memrev32ifbe(&i32);
         memcpy(p,((uint8_t*)&i32)+1,sizeof(i32)-sizeof(uint8_t));
     } else if (encoding == ZIP_INT_32B) {
@@ -881,13 +881,13 @@ unsigned int ziplistGet(unsigned char *p, unsigned char **sstr, unsigned int *sl
 
     zipEntry(p, &entry);
     if (ZIP_IS_STR(entry.encoding)) {
-        if (sstr) {
-            *slen = entry.len;
-            *sstr = p+entry.headersize;
+        if (sstr) {//如果是字符串
+            *slen = entry.len;//设置长度
+            *sstr = p+entry.headersize;//设置字符串开始位置
         }
     } else {
-        if (sval) {
-            *sval = zipLoadInteger(p+entry.headersize,entry.encoding);
+        if (sval) { //如果不是字符串
+            *sval = zipLoadInteger(p+entry.headersize,entry.encoding); //得到值
         }
     }
     return 1;

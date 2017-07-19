@@ -647,7 +647,7 @@ int loadAppendOnlyFile(char *filename) {
 
         /* Serve the clients from time to time */
         if (!(loops++ % 1000)) {
-            loadingProgress(ftello(fp));
+            loadingProgress(ftello(fp));//获取文件的指针
             processEventsWhileBlocked();
         }
 

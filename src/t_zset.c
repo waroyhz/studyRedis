@@ -62,7 +62,7 @@ zskiplistNode *zslCreateNode(int level, double score, robj *obj) {
     return zn;
 }
 
-zskiplist *zslCreate(void) {
+zskiplist *zslCreate(void) {//新建一个跳表
     int j;
     zskiplist *zsl;
 
@@ -103,7 +103,7 @@ void zslFree(zskiplist *zsl) {
 int zslRandomLevel(void) {
     int level = 1;
     while ((random()&0xFFFF) < (ZSKIPLIST_P * 0xFFFF))
-        level += 1;
+        level += 1;//25%几率放入更深入一层
     return (level<ZSKIPLIST_MAXLEVEL) ? level : ZSKIPLIST_MAXLEVEL;
 }
 
@@ -117,30 +117,30 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
     for (i = zsl->level-1; i >= 0; i--) {
         /* store rank that is crossed to reach the insert position */
         rank[i] = i == (zsl->level-1) ? 0 : rank[i+1];
-        while (x->level[i].forward &&
-            (x->level[i].forward->score < score ||
-                (x->level[i].forward->score == score &&
+        while (x->level[i].forward &&//如果节点向后不为空
+            (x->level[i].forward->score < score || //如果节点向后分数小于添加的分数
+                (x->level[i].forward->score == score && //如果分数相等，则判断对象的大小，插入的对象需要比节点小
                 compareStringObjects(x->level[i].forward->obj,obj) < 0))) {
             rank[i] += x->level[i].span;
             x = x->level[i].forward;
         }
-        update[i] = x;
+        update[i] = x;//保存插入每一个层级的节点
     }
     /* we assume the key is not already inside, since we allow duplicated
      * scores, and the re-insertion of score and redis object should never
      * happen since the caller of zslInsert() should test in the hash table
      * if the element is already inside or not. */
     level = zslRandomLevel();
-    if (level > zsl->level) {
+    if (level > zsl->level) {//如果新的级别大于列表的顶级
         for (i = zsl->level; i < level; i++) {
             rank[i] = 0;
-            update[i] = zsl->header;
+            update[i] = zsl->header;//需要更新顶级的header
             update[i]->level[i].span = zsl->length;
         }
         zsl->level = level;
     }
     x = zslCreateNode(level,score,obj);
-    for (i = 0; i < level; i++) {
+    for (i = 0; i < level; i++) {//更新每个层级的前后关系
         x->level[i].forward = update[i]->level[i].forward;
         update[i]->level[i].forward = x;
 
@@ -153,17 +153,17 @@ zskiplistNode *zslInsert(zskiplist *zsl, double score, robj *obj) {
     for (i = level; i < zsl->level; i++) {
         update[i]->level[i].span++;
     }
-
+    //设置头尾
     x->backward = (update[0] == zsl->header) ? NULL : update[0];
     if (x->level[0].forward)
         x->level[0].forward->backward = x;
     else
         zsl->tail = x;
-    zsl->length++;
+    zsl->length++;//更新表长度
     return x;
 }
 
-/* Internal function used by zslDelete, zslDeleteByScore and zslDeleteByRank */
+/* Internal function used by zslDelete, zslDeleteByScore and zslDeleteByRank ，删除节点的实现方法*/
 void zslDeleteNode(zskiplist *zsl, zskiplistNode *x, zskiplistNode **update) {
     int i;
     for (i = 0; i < zsl->level; i++) {
