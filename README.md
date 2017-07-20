@@ -12,7 +12,6 @@
          src/t_list.c#list,链表
          src/t_hash.c#hash操作
          src/t_set.c#set集合操作
-         src/t_string.c#基础set/get操作命令
  
          src/dict.c#hasbtable实现
          src/adlist.c#基础链表list
@@ -34,7 +33,7 @@
          src/multi.c#多命令，事务,使用监控方法实现事物
          src/slowlog.c#showlog命令
          src/bitops.c#位操作
- 
+         src/t_string.c#基础set/get操作命令 
  
          #工具
          src/config.c#配置文件的读取
