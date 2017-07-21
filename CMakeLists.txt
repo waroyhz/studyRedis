@@ -68,6 +68,7 @@ set(SOURCE_FILES
         src/networking.c#网络工具类
         src/cluster.c #集群
         src/replication.c#同步复制
+        src/sentinel.c#rendis哨兵服务
 
         #封装
         src/syncio.c #同步io
@@ -82,18 +83,14 @@ set(SOURCE_FILES
         src/sha1.c#sha1算法
         src/crc16.c#crc16实现
         src/crc64.c#crc64实现
+        src/lzf_c.c#压缩
+        src/lzf_d.c#解压缩
 
 
         #其他:
-        src/lzf.h
-        src/lzf_c.c
-        src/lzf_d.c
-        src/latency.c
-        src/setproctitle.c
-
-        src/sentinel.c
-
-        src/release.c
+        src/latency.c#延时记录，性能记录
+        src/setproctitle.c#设置进程名称
+        src/release.c #发布时的版本号及相关信息
         )
 
 LINK_DIRECTORIES(/usr/local/lib deps/lua/src deps/hiredis)
